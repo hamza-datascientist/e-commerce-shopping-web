@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyShop Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  :root {
+    --bg:#0f0f13; --surface:#1a1a24; --card:#22222f;
+    --border:#2e2e3e; --accent:#6c63ff; --accent2:#ff6584;
+    --green:#00d4aa; --yellow:#f59e0b; --text:#f0f0f5; --muted:#8888aa;
+  }
+  body { font-family:'Inter',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+
+  /* NAV */
+  nav {
+    background:rgba(15,15,19,0.95); border-bottom:1px solid var(--border);
+    padding:0 2rem; height:64px; display:flex; align-items:center; justify-content:space-between;
+    position:sticky; top:0; z-index:100;
+  }
+  .logo { font-size:1.3rem; font-weight:800; background:linear-gradient(135deg,var(--accent),var(--accent2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+  .admin-tag { background:rgba(108,99,255,0.15); border:1px solid rgba(108,99,255,0.3); color:var(--accent); padding:0.3rem 0.8rem; border-radius:100px; font-size:0.78rem; font-weight:600; }
+
+  /* STATS */
+  .stats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; padding:2rem; }
+  .stat-card { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:1.2rem 1.5rem; }
+  .stat-label { font-size:0.8rem; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:0.05em; margin-bottom:0.5rem; }
+  .stat-value { font-size:2rem; font-weight:800; }
+  .stat-value.purple { color:var(--accent); }
+  .stat-value.green  { color:var(--green); }
+  .stat-value.yellow { color:var(--yellow); }
+  .stat-value.red    { color:var(--accent2); }
+
+  /* FILTERS */
+  .toolbar { padding:0 2rem 1rem; display:flex; gap:0.75rem; align-items:center; flex-wrap:wrap; }
+  .toolbar input {
+    background:var(--surface); border:1px solid var(--border); color:var(--text);
+    padding:0.6rem 1rem; border-radius:8px; font-family:inherit; font-size:0.9rem; width:240px;
+  }
+  .toolbar input:focus { outline:none; border-color:var(--accent); }
+  .filter-btn {
+    background:var(--surface); border:1px solid var(--border); color:var(--muted);
+    padding:0.6rem 1rem; border-radius:8px; font-family:inherit; font-size:0.85rem;
+    cursor:pointer; transition:all 0.2s; font-weight:500;
+  }
+  .filter-btn:hover, .filter-btn.active { border-color:var(--accent); color:var(--accent); background:rgba(108,99,255,0.08); }
+
+  /* TABLE */
+  .table-wrap { padding:0 2rem 3rem; overflow-x:auto; }
+  table { width:100%; border-collapse:collapse; }
+  th {
+    text-align:left; font-size:0.75rem; font-weight:600; color:var(--muted);
+    text-transform:uppercase; letter-spacing:0.06em;
+    padding:0.75rem 1rem; border-bottom:1px solid var(--border);
+  }
+  td { padding:1rem; border-bottom:1px solid rgba(46,46,62,0.5); vertical-align:top; }
+  tr:hover td { background:rgba(108,99,255,0.04); }
+  .order-id { font-size:0.8rem; color:var(--accent); font-weight:700; }
+  .customer-name { font-weight:700; margin-bottom:0.2rem; }
+  .customer-phone { font-size:0.82rem; color:var(--muted); }
+  .address-text { font-size:0.82rem; color:var(--muted); max-width:200px; line-height:1.5; }
+  .items-list { font-size:0.82rem; color:var(--muted); line-height:1.6; }
+  .price { font-weight:800; font-size:1rem; }
+  .date-text { font-size:0.82rem; color:var(--muted); }
+
+  /* STATUS */
+  .status-badge {
+    display:inline-block; padding:0.25rem 0.7rem; border-radius:100px;
+    font-size:0.75rem; font-weight:700;
+  }
+  .status-Pending   { background:rgba(245,158,11,0.15);  color:var(--yellow); }
+  .status-Confirmed { background:rgba(108,99,255,0.15);  color:var(--accent); }
+  .status-Shipped   { background:rgba(99,179,255,0.15);  color:#63b3ff; }
+  .status-Delivered { background:rgba(0,212,170,0.15);   color:var(--green); }
+  .status-Cancelled { background:rgba(255,101,132,0.15); color:var(--accent2); }
+
+  /* STATUS SELECT */
+  .status-select {
+    background:var(--surface); border:1px solid var(--border); color:var(--text);
+    padding:0.4rem 0.6rem; border-radius:7px; font-family:inherit; font-size:0.82rem;
+    cursor:pointer; margin-top:0.5rem; width:100%;
+  }
+  .status-select:focus { outline:none; border-color:var(--accent); }
+
+  /* EMPTY */
+  .empty { text-align:center; padding:4rem; color:var(--muted); }
+  .empty .icon { font-size:3rem; margin-bottom:0.5rem; }
+
+  /* TOAST */
+  .toast {
+    position:fixed; bottom:2rem; right:2rem;
+    background:var(--card); border:1px solid var(--accent); color:var(--text);
+    padding:1rem 1.5rem; border-radius:12px; font-weight:600;
+    box-shadow:0 8px 32px rgba(0,0,0,0.4); z-index:999;
+    transform:translateY(100px); opacity:0; transition:all 0.3s;
+  }
+  .toast.show { transform:translateY(0); opacity:1; }
+
+  /* LOADING */
+  .loading { text-align:center; padding:3rem; color:var(--muted); font-size:1.1rem; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">🛒 MyShop</div>
+  <div style="display:flex;gap:1rem;align-items:center;">
+    <span class="admin-tag">🔐 Admin Panel</span>
+    <a href="/" style="color:var(--muted);font-size:0.85rem;text-decoration:none;">← Shop</a>
+  </div>
+</nav>
+
+<!-- STATS -->
+<div class="stats-grid" id="stats-grid">
+  <div class="stat-card"><div class="stat-label">Total Orders</div><div class="stat-value purple" id="s-total">—</div></div>
+  <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value green" id="s-revenue">—</div></div>
+  <div class="stat-card"><div class="stat-label">Pending</div><div class="stat-value yellow" id="s-pending">—</div></div>
+  <div class="stat-card"><div class="stat-label">Delivered</div><div class="stat-value green" id="s-delivered">—</div></div>
+</div>
+
+<!-- TOOLBAR -->
+<div class="toolbar">
+  <input type="text" id="search" placeholder="🔍 Customer ya Order ID search karo..." oninput="renderTable()">
+  <button class="filter-btn active" onclick="setFilter('All')">All</button>
+  <button class="filter-btn" onclick="setFilter('Pending')">⏳ Pending</button>
+  <button class="filter-btn" onclick="setFilter('Confirmed')">✅ Confirmed</button>
+  <button class="filter-btn" onclick="setFilter('Shipped')">🚚 Shipped</button>
+  <button class="filter-btn" onclick="setFilter('Delivered')">📦 Delivered</button>
+  <button class="filter-btn" onclick="setFilter('Cancelled')">❌ Cancelled</button>
+  <button class="filter-btn" onclick="loadOrders()" style="margin-left:auto;">🔄 Refresh</button>
+</div>
+
+<!-- TABLE -->
+<div class="table-wrap">
+  <div class="loading" id="loading">Loading orders...</div>
+  <table id="orders-table" style="display:none;">
+    <thead>
+      <tr>
+        <th>Order ID / Date</th>
+        <th>Customer</th>
+        <th>Address</th>
+        <th>Items</th>
+        <th>Total</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+  <div class="empty" id="empty-state" style="display:none;">
+    <div class="icon">📭</div>
+    <p>Koi order nahi mila</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let allOrders = [];
+let currentFilter = 'All';
+
+// ── LOAD ORDERS ───────────────────────────────────────────────
+async function loadOrders() {
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('orders-table').style.display = 'none';
+  document.getElementById('empty-state').style.display = 'none';
+
+  try {
+    const res = await fetch('http://localhost:5000/api/orders');
+    allOrders = await res.json();
+    updateStats();
+    renderTable();
+  } catch(e) {
+    document.getElementById('loading').textContent = '❌ Server se connect nahi ho paya. app.py chala rahe ho?';
+  }
+}
+
+// ── STATS ─────────────────────────────────────────────────────
+function updateStats() {
+  const total    = allOrders.length;
+  const revenue  = allOrders.filter(o => o.status !== 'Cancelled').reduce((s,o) => s + o.total, 0);
+  const pending  = allOrders.filter(o => o.status === 'Pending').length;
+  const delivered= allOrders.filter(o => o.status === 'Delivered').length;
+
+  document.getElementById('s-total').textContent     = total;
+  document.getElementById('s-revenue').textContent   = '₹' + revenue.toLocaleString('en-IN');
+  document.getElementById('s-pending').textContent   = pending;
+  document.getElementById('s-delivered').textContent = delivered;
+}
+
+// ── FILTER ───────────────────────────────────────────────────
+function setFilter(f) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.includes(f) || (f === 'All' && b.textContent === 'All'));
+  });
+  renderTable();
+}
+
+// ── RENDER TABLE ──────────────────────────────────────────────
+function renderTable() {
+  const search = document.getElementById('search').value.toLowerCase();
+  let orders = allOrders;
+
+  if (currentFilter !== 'All') orders = orders.filter(o => o.status === currentFilter);
+  if (search) orders = orders.filter(o =>
+    o.customer.toLowerCase().includes(search) ||
+    o.id.toLowerCase().includes(search) ||
+    o.phone.includes(search)
+  );
+
+  document.getElementById('loading').style.display = 'none';
+
+  if (orders.length === 0) {
+    document.getElementById('orders-table').style.display = 'none';
+    document.getElementById('empty-state').style.display = 'block';
+    return;
+  }
+
+  document.getElementById('orders-table').style.display = 'table';
+  document.getElementById('empty-state').style.display = 'none';
+
+  document.getElementById('table-body').innerHTML = orders.map(o => `
+    <tr>
+      <td>
+        <div class="order-id">${o.id}</div>
+        <div class="date-text">${o.date}</div>
+      </td>
+      <td>
+        <div class="customer-name">${o.customer}</div>
+        <div class="customer-phone">📞 ${o.phone}</div>
+        ${o.email ? `<div class="customer-phone">✉️ ${o.email}</div>` : ''}
+      </td>
+      <td>
+        <div class="address-text">📍 ${o.address}</div>
+      </td>
+      <td>
+        <div class="items-list">
+          ${o.items.map(i => `${i.emoji} ${i.name} × ${i.qty}`).join('<br>')}
+        </div>
+      </td>
+      <td>
+        <div class="price">₹${o.total.toLocaleString('en-IN')}</div>
+        ${o.delivery === 0 ? '<div style="font-size:0.75rem;color:var(--green);">Free delivery</div>' : `<div style="font-size:0.75rem;color:var(--muted);">+₹${o.delivery} delivery</div>`}
+      </td>
+      <td>
+        <span class="status-badge status-${o.status}">${o.status}</span>
+        <select class="status-select" onchange="updateStatus('${o.id}', this.value)">
+          <option value="">— Update Status —</option>
+          <option value="Pending">⏳ Pending</option>
+          <option value="Confirmed">✅ Confirmed</option>
+          <option value="Shipped">🚚 Shipped</option>
+          <option value="Delivered">📦 Delivered</option>
+          <option value="Cancelled">❌ Cancelled</option>
+        </select>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// ── UPDATE STATUS ─────────────────────────────────────────────
+async function updateStatus(orderId, newStatus) {
+  if (!newStatus) return;
+  try {
+    await fetch(`http://localhost:5000/api/order/${orderId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: newStatus })
+    });
+    showToast(`✅ Order ${orderId} → ${newStatus}`);
+    await loadOrders();
+  } catch(e) {
+    showToast('❌ Update nahi hua — server check karo');
+  }
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+loadOrders();
+setInterval(loadOrders, 30000); // har 30 sec mein auto refresh
+</script>
+</body>
+</html>

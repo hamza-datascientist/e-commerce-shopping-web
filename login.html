@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Login — MyShop</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family:'Inter',sans-serif;
+    background:#0f0f13;
+    color:#f0f0f5;
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .card {
+    background:#1a1a24;
+    border:1px solid #2e2e3e;
+    border-radius:20px;
+    padding:2.5rem;
+    width:100%;
+    max-width:400px;
+  }
+  .logo {
+    font-size:1.8rem;
+    font-weight:800;
+    background:linear-gradient(135deg,#6c63ff,#ff6584);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+    text-align:center;
+    margin-bottom:0.3rem;
+  }
+  .subtitle {
+    text-align:center;
+    color:#8888aa;
+    font-size:0.9rem;
+    margin-bottom:2rem;
+  }
+  .form-group { margin-bottom:1.2rem; }
+  .form-label {
+    display:block;
+    font-size:0.8rem;
+    font-weight:600;
+    color:#8888aa;
+    text-transform:uppercase;
+    letter-spacing:0.05em;
+    margin-bottom:0.4rem;
+  }
+  .form-input {
+    width:100%;
+    background:#22222f;
+    border:1px solid #2e2e3e;
+    color:#f0f0f5;
+    padding:0.8rem 1rem;
+    border-radius:8px;
+    font-family:inherit;
+    font-size:0.95rem;
+    transition:border 0.2s;
+  }
+  .form-input:focus { outline:none; border-color:#6c63ff; }
+  .login-btn {
+    width:100%;
+    background:linear-gradient(135deg,#6c63ff,#8b5cf6);
+    color:white;
+    border:none;
+    padding:0.9rem;
+    border-radius:10px;
+    font-family:inherit;
+    font-weight:700;
+    font-size:1rem;
+    cursor:pointer;
+    margin-top:0.5rem;
+    transition:all 0.2s;
+  }
+  .login-btn:hover { opacity:0.9; transform:translateY(-1px); }
+  .error {
+    background:rgba(255,101,132,0.1);
+    border:1px solid rgba(255,101,132,0.3);
+    color:#ff6584;
+    padding:0.7rem 1rem;
+    border-radius:8px;
+    font-size:0.85rem;
+    margin-bottom:1rem;
+    display:none;
+  }
+  .lock-icon { text-align:center; font-size:2.5rem; margin-bottom:1rem; }
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="lock-icon">🔐</div>
+  <div class="logo">MyShop</div>
+  <div class="subtitle">Admin Panel — Sirf authorized log</div>
+
+  <div class="error" id="error-msg"></div>
+
+  <div class="form-group">
+    <label class="form-label">Username</label>
+    <input class="form-input" id="username" type="text" placeholder="Admin username">
+  </div>
+  <div class="form-group">
+    <label class="form-label">Password</label>
+    <input class="form-input" id="password" type="password" placeholder="••••••••"
+      onkeydown="if(event.key==='Enter') doLogin()">
+  </div>
+  <button class="login-btn" onclick="doLogin()">Login →</button>
+</div>
+
+<script>
+async function doLogin() {
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+
+  if (!username || !password) {
+    showError('Username aur password dono bharo!');
+    return;
+  }
+
+  const res = await fetch('/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username, password })
+  });
+  const data = await res.json();
+
+  if (data.success) {
+    window.location.href = '/admin';
+  } else {
+    showError(data.message || 'Galat credentials!');
+  }
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MyShop — Best Deals Online</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #0f0f13;
+    --surface: #1a1a24;
+    --card: #22222f;
+    --border: #2e2e3e;
+    --accent: #6c63ff;
+    --accent2: #ff6584;
+    --green: #00d4aa;
+    --text: #f0f0f5;
+    --muted: #8888aa;
+    --white: #ffffff;
+  }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── NAVBAR ── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(15,15,19,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+  }
+  .logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    cursor: pointer;
+  }
+  .nav-links { display: flex; gap: 0.5rem; align-items: center; }
+  .nav-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 0.95rem;
+    font-family: inherit;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  .nav-btn:hover, .nav-btn.active { color: var(--text); background: var(--surface); }
+  .cart-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .cart-btn:hover { background: #5a52e0; transform: translateY(-1px); }
+  .badge {
+    background: var(--accent2);
+    color: white;
+    border-radius: 50%;
+    width: 20px; height: 20px;
+    font-size: 0.7rem;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+  }
+
+  /* ── PAGES ── */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 5rem 2rem 4rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -100px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(108,99,255,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-block;
+    background: rgba(108,99,255,0.15);
+    border: 1px solid rgba(108,99,255,0.3);
+    color: var(--accent);
+    padding: 0.3rem 1rem;
+    border-radius: 100px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 1.2rem;
+  }
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero p { color: var(--muted); font-size: 1.1rem; max-width: 500px; margin: 0 auto 2rem; }
+  .hero-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.85rem 2rem;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary:hover { background: #5a52e0; transform: translateY(-2px); box-shadow: 0 8px 25px rgba(108,99,255,0.35); }
+  .btn-outline {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 0.85rem 2rem;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── STATS ── */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    padding: 2rem;
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num { font-size: 2rem; font-weight: 800; color: var(--accent); }
+  .stat-label { font-size: 0.85rem; color: var(--muted); margin-top: 0.2rem; }
+
+  /* ── PRODUCTS PAGE ── */
+  .page-header {
+    padding: 2.5rem 2rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .page-header h2 { font-size: 1.8rem; font-weight: 800; }
+  .search-bar {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .search-input {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    width: 220px;
+    transition: border 0.2s;
+  }
+  .search-input:focus { outline: none; border-color: var(--accent); }
+  .filter-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 500;
+  }
+  .filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(108,99,255,0.08); }
+
+  /* ── PRODUCT GRID ── */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+    padding: 0 2rem 3rem;
+  }
+  .product-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .product-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(108,99,255,0.2); }
+  .product-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    background: var(--surface);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+  }
+  .product-body { padding: 1.2rem; }
+  .product-cat {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+  .product-name { font-size: 1.05rem; font-weight: 700; margin-bottom: 0.4rem; }
+  .product-desc { font-size: 0.85rem; color: var(--muted); margin-bottom: 1rem; line-height: 1.5; }
+  .product-footer { display: flex; align-items: center; justify-content: space-between; }
+  .product-price { font-size: 1.3rem; font-weight: 800; }
+  .product-price span { font-size: 0.8rem; color: var(--muted); font-weight: 400; }
+  .add-btn {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.55rem 1.1rem;
+    border-radius: 8px;
+    font-family: inherit;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .add-btn:hover { background: #5a52e0; }
+  .add-btn:active { transform: scale(0.96); }
+  .stock-badge {
+    display: inline-block;
+    background: rgba(0,212,170,0.12);
+    color: var(--green);
+    font-size: 0.72rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 100px;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+  }
+
+  /* ── CART PAGE ── */
+  .cart-container { max-width: 800px; margin: 0 auto; padding: 2rem; }
+  .cart-empty { text-align: center; padding: 5rem 2rem; }
+  .cart-empty .empty-icon { font-size: 5rem; margin-bottom: 1rem; }
+  .cart-empty h3 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+  .cart-empty p { color: var(--muted); margin-bottom: 2rem; }
+  .cart-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1rem;
+    transition: border 0.2s;
+  }
+  .cart-item:hover { border-color: var(--border); }
+  .cart-item-icon { font-size: 2.5rem; min-width: 50px; text-align: center; }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-weight: 700; margin-bottom: 0.2rem; }
+  .cart-item-price { color: var(--muted); font-size: 0.9rem; }
+  .qty-control { display: flex; align-items: center; gap: 0.5rem; }
+  .qty-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+  .qty-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .qty-num { font-weight: 700; min-width: 24px; text-align: center; }
+  .item-total { font-weight: 800; font-size: 1.1rem; min-width: 80px; text-align: right; }
+  .remove-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0.3rem;
+    border-radius: 6px;
+    transition: all 0.2s;
+  }
+  .remove-btn:hover { color: var(--accent2); background: rgba(255,101,132,0.1); }
+  .cart-summary {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  .summary-row { display: flex; justify-content: space-between; margin-bottom: 0.8rem; color: var(--muted); }
+  .summary-total { display: flex; justify-content: space-between; font-size: 1.3rem; font-weight: 800; padding-top: 1rem; border-top: 1px solid var(--border); margin-top: 0.5rem; }
+  .checkout-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), #8b5cf6);
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 10px;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 1.05rem;
+    cursor: pointer;
+    margin-top: 1.2rem;
+    transition: all 0.2s;
+  }
+  .checkout-btn:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 8px 25px rgba(108,99,255,0.35); }
+
+  /* ── ORDER FORM ── */
+  .order-container { max-width: 600px; margin: 0 auto; padding: 2rem; }
+  .form-group { margin-bottom: 1.2rem; }
+  .form-label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--muted); margin-bottom: 0.4rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .form-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: border 0.2s;
+  }
+  .form-input:focus { outline: none; border-color: var(--accent); }
+  .form-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .form-section h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1.2rem; color: var(--accent); }
+
+  /* ── ORDERS PAGE ── */
+  .orders-container { max-width: 800px; margin: 0 auto; padding: 2rem; }
+  .order-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    transition: border 0.2s;
+  }
+  .order-card:hover { border-color: var(--accent); }
+  .order-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem; }
+  .order-id { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.3rem; }
+  .order-customer { font-weight: 700; font-size: 1.05rem; }
+  .order-status {
+    background: rgba(0,212,170,0.12);
+    color: var(--green);
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.3rem 0.8rem;
+    border-radius: 100px;
+  }
+  .order-items { border-top: 1px solid var(--border); padding-top: 0.8rem; margin-top: 0.5rem; }
+  .order-item-row { display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--muted); padding: 0.3rem 0; }
+  .order-total { display: flex; justify-content: space-between; font-weight: 800; font-size: 1.05rem; padding-top: 0.8rem; border-top: 1px solid var(--border); margin-top: 0.5rem; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--card);
+    border: 1px solid var(--accent);
+    color: var(--text);
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 600;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    z-index: 999;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s;
+    max-width: 300px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ── SUCCESS ── */
+  .success-screen { text-align: center; padding: 4rem 2rem; }
+  .success-icon { font-size: 5rem; margin-bottom: 1rem; animation: bounce 0.5s ease; }
+  @keyframes bounce { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+  .success-screen h2 { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; }
+  .success-screen p { color: var(--muted); margin-bottom: 2rem; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeIn { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+  .page.active { animation: fadeIn 0.3s ease; }
+
+  .no-results { text-align: center; padding: 3rem; color: var(--muted); }
+  .no-results .icon { font-size: 3rem; margin-bottom: 0.5rem; }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav>
+  <div class="logo" onclick="showPage('home')">🛒 MyShop</div>
+  <div class="nav-links">
+    <button class="nav-btn active" id="nav-home" onclick="showPage('home')">Home</button>
+    <button class="nav-btn" id="nav-products" onclick="showPage('products')">Products</button>
+    <button class="nav-btn" id="nav-orders" onclick="showPage('orders')">My Orders</button>
+    <a href="http://localhost:5000/admin" target="_blank" style="color:var(--muted);font-size:0.85rem;text-decoration:none;padding:0.5rem 1rem;">Admin ↗</a>
+    <button class="cart-btn" onclick="showPage('cart')">
+      🛒 Cart <span class="badge" id="cart-badge">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- ══ HOME PAGE ══ -->
+<div class="page active" id="page-home">
+  <div class="hero">
+<div style="padding:2rem 2rem 0;">
+  <!-- Top Banner Text -->
+  <div style="text-align:center;margin-bottom:2rem;">
+    <div style="font-size:0.8rem;font-weight:700;letter-spacing:0.2em;color:#c9b99a;text-transform:uppercase;margin-bottom:0.8rem;">New Collection 2026</div>
+    <h2 style="font-size:clamp(1.8rem,4vw,3rem);font-weight:800;line-height:1.1;margin-bottom:0.8rem;">
+      Premium <span style="background:linear-gradient(135deg,#c9b99a,#f0e6d3);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">Pakistani Suits</span>
+    </h2>
+    <p style="color:#8888aa;font-size:1rem;max-width:500px;margin:0 auto;">Har mausam ke liye khaas — lawn, cotton, chiffon aur silk suits</p>
+  </div>
+
+  <!-- 4 Suit Cards Grid -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;">
+
+    <div style="border-radius:16px;overflow:hidden;position:relative;height:380px;cursor:pointer;" onclick="showPage('products')">
+      <img src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=90" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.75);transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:1.2rem;background:linear-gradient(transparent,rgba(0,0,0,0.85));">
+        <div style="font-size:0.72rem;color:#c9b99a;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;">Lawn Collection</div>
+        <div style="color:white;font-weight:700;font-size:1rem;">Summer Suits</div>
+        <div style="color:rgba(255,255,255,0.7);font-size:0.82rem;">₹1,200 se shuru</div>
+      </div>
+    </div>
+
+    <div style="border-radius:16px;overflow:hidden;position:relative;height:380px;cursor:pointer;" onclick="showPage('products')">
+      <img src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&q=90" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.75);transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:1.2rem;background:linear-gradient(transparent,rgba(0,0,0,0.85));">
+        <div style="font-size:0.72rem;color:#c9b99a;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;">Chiffon Collection</div>
+        <div style="color:white;font-weight:700;font-size:1rem;">Party Wear</div>
+        <div style="color:rgba(255,255,255,0.7);font-size:0.82rem;">₹2,500 se shuru</div>
+      </div>
+    </div>
+
+    <div style="border-radius:16px;overflow:hidden;position:relative;height:380px;cursor:pointer;" onclick="showPage('products')">
+      <img src="https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600&q=90" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.75);transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:1.2rem;background:linear-gradient(transparent,rgba(0,0,0,0.85));">
+        <div style="font-size:0.72rem;color:#c9b99a;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;">Cotton Collection</div>
+        <div style="color:white;font-weight:700;font-size:1rem;">Daily Wear</div>
+        <div style="color:rgba(255,255,255,0.7);font-size:0.82rem;">₹800 se shuru</div>
+      </div>
+    </div>
+
+    <div style="border-radius:16px;overflow:hidden;position:relative;height:380px;cursor:pointer;" onclick="showPage('products')">
+      <img src="https://images.unsplash.com/photo-1564584217132-2271feaeb3c7?w=600&q=90" style="width:100%;height:100%;object-fit:cover;filter:brightness(0.75);transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+      <div style="position:absolute;bottom:0;left:0;right:0;padding:1.2rem;background:linear-gradient(transparent,rgba(0,0,0,0.85));">
+        <div style="font-size:0.72rem;color:#c9b99a;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;">Silk Collection</div>
+        <div style="color:white;font-weight:700;font-size:1rem;">Bridal Wear</div>
+        <div style="color:rgba(255,255,255,0.7);font-size:0.82rem;">₹4,000 se shuru</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Strip -->
+  <div style="display:flex;justify-content:center;gap:3rem;padding:1.2rem;background:#1a1a24;border-radius:12px;margin-bottom:1rem;flex-wrap:wrap;">
+    <div style="display:flex;align-items:center;gap:0.5rem;color:#8888aa;font-size:0.85rem;">
+      <span style="color:#00d4aa;">✓</span> Free Delivery above ₹999
+    </div>
+    <div style="display:flex;align-items:center;gap:0.5rem;color:#8888aa;font-size:0.85rem;">
+      <span style="color:#00d4aa;">✓</span> 100% Original Products
+    </div>
+    <div style="display:flex;align-items:center;gap:0.5rem;color:#8888aa;font-size:0.85rem;">
+      <span style="color:#00d4aa;">✓</span> Easy Returns
+    </div>
+    <div style="display:flex;align-items:center;gap:0.5rem;color:#8888aa;font-size:0.85rem;">
+      <span style="color:#00d4aa;">✓</span> Secure Payment
+    </div>
+  </div>
+</div>   <div class="hero-tag">✨ New Arrivals Every Week</div>
+    <h1>Shop Smart,<br><span>Save More.</span></h1>
+    <p>Top quality products at the best prices. Fast delivery, easy returns.</p>
+    <div class="hero-btns">
+      <button class="btn-primary" onclick="showPage('products')">Browse Products →</button>
+      <button class="btn-outline" onclick="showPage('orders')">Track My Orders</button>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num" id="total-products-stat">0</div>
+      <div class="stat-label">Products</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="total-categories-stat">0</div>
+      <div class="stat-label">Categories</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num" id="total-orders-stat">0</div>
+      <div class="stat-label">Orders Placed</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PRODUCTS PAGE ══ -->
+<div class="page" id="page-products">
+  <div class="page-header">
+    <h2>All Products</h2>
+    <div class="search-bar">
+      <input class="search-input" id="search-input" type="text" placeholder="🔍 Search products..." oninput="renderProducts()">
+    </div>
+  </div>
+  <div style="padding: 0 2rem 1rem; display:flex; gap:0.5rem; flex-wrap:wrap;" id="category-filters"></div>
+  <div class="products-grid" id="products-grid"></div>
+</div>
+
+<!-- ══ CART PAGE ══ -->
+<div class="page" id="page-cart">
+  <div class="cart-container">
+    <h2 style="font-size:1.8rem; font-weight:800; margin-bottom:1.5rem;">Your Cart</h2>
+    <div id="cart-content"></div>
+  </div>
+</div>
+
+<!-- ══ ORDER FORM PAGE ══ -->
+<div class="page" id="page-checkout">
+  <div class="order-container">
+    <h2 style="font-size:1.8rem; font-weight:800; margin-bottom:1.5rem;">Place Order</h2>
+    <div class="form-section">
+      <h3>📦 Order Summary</h3>
+      <div id="checkout-summary"></div>
+    </div>
+    <div class="form-section">
+      <h3>👤 Your Details</h3>
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input class="form-input" id="f-name" type="text" placeholder="Rahul Sharma">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input class="form-input" id="f-phone" type="tel" placeholder="9876543210">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email (optional)</label>
+        <input class="form-input" id="f-email" type="email" placeholder="rahul@email.com">
+      </div>
+    </div>
+    <div class="form-section">
+      <h3>🏠 Delivery Address</h3>
+      <div class="form-group">
+        <label class="form-label">Street Address</label>
+        <input class="form-input" id="f-address" type="text" placeholder="123, Gandhi Nagar">
+      </div>
+      <div class="form-group">
+        <label class="form-label">City</label>
+        <input class="form-input" id="f-city" type="text" placeholder="Mumbai">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pincode</label>
+        <input class="form-input" id="f-pin" type="text" placeholder="400001">
+      </div>
+    </div>
+    <button class="checkout-btn" onclick="placeOrder()">✅ Confirm Order</button>
+  </div>
+</div>
+
+<!-- ══ ORDERS PAGE ══ -->
+<div class="page" id="page-orders">
+  <div class="orders-container">
+    <h2 style="font-size:1.8rem; font-weight:800; margin-bottom:1.5rem;">My Orders</h2>
+    <div id="orders-list"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────
+const products = [
+  { id:1, name:"Wireless Earbuds Pro", price:999,  category:"Electronics", emoji:"🎧", desc:"Crystal clear sound, 20hr battery life, noise cancellation", stock:50 },
+  { id:2, name:"Laptop Stand",         price:1499, category:"Accessories", emoji:"💻", desc:"Adjustable aluminum build, ergonomic design for all laptops", stock:30 },
+  { id:3, name:"USB-C Hub 7-in-1",     price:799,  category:"Electronics", emoji:"🔌", desc:"7 ports, 4K HDMI, 100W charging passthrough", stock:100 },
+  { id:4, name:"Mechanical Keyboard",  price:2499, category:"Electronics", emoji:"⌨️", desc:"RGB backlit, tactile switches, compact tenkeyless layout", stock:20 },
+  { id:5, name:"Desk Organizer",       price:599,  category:"Accessories", emoji:"🗂️", desc:"Bamboo wood, fits pens, phone, cards & more", stock:60 },
+  { id:6, name:"Webcam HD 1080p",      price:1799, category:"Electronics", emoji:"📷", desc:"Auto focus, built-in mic, plug & play USB", stock:15 },
+];
+
+let cart = JSON.parse(localStorage.getItem('myshop_cart') || '[]');
+let orders = JSON.parse(localStorage.getItem('myshop_orders') || '[]');
+let selectedCategory = 'All';
+
+// ── SAVE ─────────────────────────────────────────────────────
+function save() {
+  localStorage.setItem('myshop_cart', JSON.stringify(cart));
+  localStorage.setItem('myshop_orders', JSON.stringify(orders));
+  updateBadge();
+  updateStats();
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const nb = document.getElementById('nav-' + name);
+  if (nb) nb.classList.add('active');
+
+  if (name === 'products') renderProducts();
+  if (name === 'cart')     renderCart();
+  if (name === 'orders')   renderOrders();
+  if (name === 'checkout') renderCheckout();
+}
+
+// ── BADGE + STATS ─────────────────────────────────────────────
+function updateBadge() {
+  const total = cart.reduce((s, i) => s + i.qty, 0);
+  document.getElementById('cart-badge').textContent = total;
+}
+function updateStats() {
+  document.getElementById('total-products-stat').textContent = products.length;
+  const cats = new Set(products.map(p => p.category));
+  document.getElementById('total-categories-stat').textContent = cats.size;
+  document.getElementById('total-orders-stat').textContent = orders.length;
+}
+
+// ── TOAST ─────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+// ── ADD TO CART ───────────────────────────────────────────────
+function addToCart(id) {
+  const product = products.find(p => p.id === id);
+  const existing = cart.find(i => i.id === id);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ ...product, qty: 1 });
+  }
+  save();
+  showToast('✅ ' + product.name + ' added to cart!');
+}
+
+// ── RENDER PRODUCTS ───────────────────────────────────────────
+function renderProducts() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  const cats = ['All', ...new Set(products.map(p => p.category))];
+
+  // Category filter buttons
+  const filterDiv = document.getElementById('category-filters');
+  filterDiv.innerHTML = cats.map(c => `
+    <button class="filter-btn ${selectedCategory === c ? 'active' : ''}" onclick="setCategory('${c}')">${c}</button>
+  `).join('');
+
+  // Filter products
+  let filtered = products;
+  if (selectedCategory !== 'All') filtered = filtered.filter(p => p.category === selectedCategory);
+  if (search) filtered = filtered.filter(p => p.name.toLowerCase().includes(search) || p.desc.toLowerCase().includes(search));
+
+  const grid = document.getElementById('products-grid');
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="no-results"><div class="icon">🔍</div><p>Koi product nahi mila. Dusra search karo.</p></div>';
+    return;
+  }
+  grid.innerHTML = filtered.map(p => `
+    <div class="product-card">
+      <div class="product-img">${p.emoji}</div>
+      <div class="product-body">
+        <div class="product-cat">${p.category}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-desc">${p.desc}</div>
+        <div class="stock-badge">✓ ${p.stock} in stock</div>
+        <div class="product-footer">
+          <div class="product-price">₹${p.price.toLocaleString('en-IN')} <span>/piece</span></div>
+          <button class="add-btn" onclick="addToCart(${p.id})">+ Add</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function setCategory(cat) {
+  selectedCategory = cat;
+  renderProducts();
+}
+
+// ── RENDER CART ───────────────────────────────────────────────
+function renderCart() {
+  const el = document.getElementById('cart-content');
+  if (cart.length === 0) {
+    el.innerHTML = `
+      <div class="cart-empty">
+        <div class="empty-icon">🛒</div>
+        <h3>Cart is empty!</h3>
+        <p>Koi bhi product add karo pehle.</p>
+        <button class="btn-primary" onclick="showPage('products')">Browse Products →</button>
+      </div>`;
+    return;
+  }
+  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const delivery = subtotal > 999 ? 0 : 49;
+  const total = subtotal + delivery;
+
+  el.innerHTML = `
+    ${cart.map((item, idx) => `
+      <div class="cart-item">
+        <div class="cart-item-icon">${item.emoji}</div>
+        <div class="cart-item-info">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-price">₹${item.price.toLocaleString('en-IN')} each</div>
+        </div>
+        <div class="qty-control">
+          <button class="qty-btn" onclick="changeQty(${idx}, -1)">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${idx}, 1)">+</button>
+        </div>
+        <div class="item-total">₹${(item.price * item.qty).toLocaleString('en-IN')}</div>
+        <button class="remove-btn" onclick="removeItem(${idx})">✕</button>
+      </div>
+    `).join('')}
+    <div class="cart-summary">
+      <div class="summary-row"><span>Subtotal</span><span>₹${subtotal.toLocaleString('en-IN')}</span></div>
+      <div class="summary-row"><span>Delivery</span><span>${delivery === 0 ? '<span style="color:var(--green)">FREE</span>' : '₹' + delivery}</span></div>
+      ${delivery === 0 ? '<div style="font-size:0.8rem;color:var(--green);margin-bottom:0.5rem;">✓ Free delivery on orders above ₹999</div>' : ''}
+      <div class="summary-total"><span>Total</span><span>₹${total.toLocaleString('en-IN')}</span></div>
+      <button class="checkout-btn" onclick="showPage('checkout')">Proceed to Checkout →</button>
+    </div>`;
+}
+
+function changeQty(idx, delta) {
+  cart[idx].qty += delta;
+  if (cart[idx].qty <= 0) cart.splice(idx, 1);
+  save();
+  renderCart();
+}
+function removeItem(idx) {
+  const name = cart[idx].name;
+  cart.splice(idx, 1);
+  save();
+  renderCart();
+  showToast('🗑️ ' + name + ' removed');
+}
+
+// ── CHECKOUT ─────────────────────────────────────────────────
+function renderCheckout() {
+  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const delivery = subtotal > 999 ? 0 : 49;
+  const total = subtotal + delivery;
+  document.getElementById('checkout-summary').innerHTML = `
+    ${cart.map(i => `<div class="order-item-row"><span>${i.emoji} ${i.name} × ${i.qty}</span><span>₹${(i.price*i.qty).toLocaleString('en-IN')}</span></div>`).join('')}
+    <div style="display:flex;justify-content:space-between;font-weight:800;font-size:1.1rem;padding-top:0.8rem;border-top:1px solid var(--border);margin-top:0.5rem;">
+      <span>Total</span><span>₹${total.toLocaleString('en-IN')}</span>
+    </div>`;
+}
+async function placeOrder() {
+  const name    = document.getElementById('f-name').value.trim();
+  const phone   = document.getElementById('f-phone').value.trim();
+  const address = document.getElementById('f-address').value.trim();
+  const city    = document.getElementById('f-city').value.trim();
+  const pin     = document.getElementById('f-pin').value.trim();
+
+  if (!name || !phone || !address || !city || !pin) {
+    showToast('⚠️ Saari details bharo pehle!'); return;
+  }
+  if (phone.length < 10) { showToast('⚠️ Phone number sahi nahi hai'); return; }
+
+  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const delivery = subtotal > 999 ? 0 : 49;
+
+  const orderData = {
+    customer: name,
+    phone: phone,
+    email: document.getElementById('f-email').value,
+    address: `${address}, ${city} - ${pin}`,
+    items: cart,
+    subtotal: subtotal,
+    delivery: delivery,
+    total: subtotal + delivery
+  };
+
+  try {
+    const res = await fetch('http://localhost:5000/api/order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(orderData)
+    });
+    const result = await res.json();
+
+    cart = [];
+    save();
+    ['f-name','f-phone','f-email','f-address','f-city','f-pin'].forEach(id => document.getElementById(id).value = '');
+
+    document.getElementById('page-checkout').innerHTML = `
+      <div class="success-screen">
+        <div class="success-icon">🎉</div>
+        <h2>Order Placed!</h2>
+        <p style="color:var(--muted);margin-top:0.5rem;">Total: ₹${orderData.total.toLocaleString('en-IN')}</p>
+        <div style="margin-top:2rem;display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;">
+          <button class="btn-primary" onclick="showPage('products')">Continue Shopping</button>
+        </div>
+      </div>`;
+  } catch(e) {
+    showToast('❌ Order nahi gaya — server chalu karo');
+  }
+}
+
+// ── RENDER ORDERS ─────────────────────────────────────────────
+function renderOrders() {
+  const el = document.getElementById('orders-list');
+  if (orders.length === 0) {
+    el.innerHTML = `
+      <div class="cart-empty">
+        <div class="empty-icon">📦</div>
+        <h3>Koi order nahi hai abhi</h3>
+        <p>Pehla order place karo!</p>
+        <button class="btn-primary" onclick="showPage('products')">Shop Now →</button>
+      </div>`;
+    return;
+  }
+  el.innerHTML = orders.map(o => `
+    <div class="order-card">
+      <div class="order-header">
+        <div>
+          <div class="order-id">${o.id} • ${o.date}</div>
+          <div class="order-customer">👤 ${o.customer}</div>
+          <div style="color:var(--muted);font-size:0.85rem;margin-top:0.2rem;">📍 ${o.address}</div>
+        </div>
+        <div class="order-status">✓ ${o.status}</div>
+      </div>
+      <div class="order-items">
+        ${o.items.map(i => `<div class="order-item-row"><span>${i.emoji} ${i.name} × ${i.qty}</span><span>₹${(i.price*i.qty).toLocaleString('en-IN')}</span></div>`).join('')}
+      </div>
+      <div class="order-total"><span>Total Paid</span><span>₹${o.total.toLocaleString('en-IN')}</span></div>
+    </div>
+  `).join('');
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+updateBadge();
+updateStats();
+</script>
+</body>
+</html>
