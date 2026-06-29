@@ -93,7 +93,7 @@ CREATE TABLE orders (
 ## 👤 Author
 
 **Hamza Siddiqui**
-- GitHub: [@YOUR_USERNAME](https://github.com/hamza-datascientist/e-commerce-shopping-web)
-- LinkedIn: [linkedin.com/in/YOUR_PROFILE](https://www.linkedin.com/in/hamza-siddiqui-990b48330/)
+- GitHub: [Hamza siddiqui](https://github.com/hamza-datascientist/e-commerce-shopping-web)
+- LinkedIn: [Hamza-datascientist](https://www.linkedin.com/in/hamza-siddiqui-990b48330/)
 
 ---
