@@ -8,8 +8,8 @@ CORS(app)
 app.secret_key = "myshop_secret_123"
 
 # ── Admin credentials ─────────────────────────────────────────
-ADMIN_USER = "hamza"
-ADMIN_PASS = "myshop@123"
+ADMIN_USER = "lafz_admin"
+ADMIN_PASS = "Lafz@2026#Secure"
 
 DB = "shop.db"
 
@@ -113,5 +113,6 @@ def update_status(order_id):
 
 if __name__ == '__main__':
     init_db()
-    print("✅ Server chalu hai — localhost:5000")
-    app.run(debug=True, port=5000)
+    print("✅ Server is on — localhost:5000")
+# Nayi line
+app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))

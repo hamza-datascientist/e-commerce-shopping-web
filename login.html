@@ -115,7 +115,7 @@ async function doLogin() {
   const password = document.getElementById('password').value.trim();
 
   if (!username || !password) {
-    showError('Username aur password dono bharo!');
+    showError('Please fill in both username and password!');
     return;
   }
 
@@ -129,7 +129,7 @@ async function doLogin() {
   if (data.success) {
     window.location.href = '/admin';
   } else {
-    showError(data.message || 'Galat credentials!');
+    showError(data.message || 'wrong credentials!');
   }
 }
 
